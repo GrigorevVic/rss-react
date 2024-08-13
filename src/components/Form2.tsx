@@ -1,52 +1,75 @@
-import { useForm } from "react-hook-form";
+
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+type FormFields = {
+  email: HTMLInputElement;
+  password: HTMLInputElement;
+  remember: HTMLInputElement;
+};
+
+type LoginFormFields = {
+  email: string;
+  password: string;
+  remember: boolean;
+};
+
 export function Form2() {
-    const schema = yup.object({
-        firstName: yup
-          .string()
-          .required("Введите имя")
-          .matches(/[A-Z]{1}[a-z]{1,23}/, "Invalid format, example: John"),
-        age: yup
-          .string()
-          .required("Введите возраст")
-          .matches(/[^-?][0-1]{1}[0-9]{0,2}/, "Invalid format, example: 10"),
-        email: yup.string().required("Введите почту").email("Invalid email"),
-      });
-    const {
-        register,
-        formState: { errors, isValid },
-        reset,
-        handleSubmit,
-      } = useForm({ mode: "onBlur", resolver: yupResolver(schema) });
-    
-      const onSubmit = (data) => {
-        console.log(JSON.stringify(data));
-        reset();
-      };
-  
+
+  const schema = yup.object().shape({
+    email: yup
+      .string()
+      .email({ email: "некорректный емайл" })
+      .required("This is required."),
+    password: yup
+      .string()
+      .required("This is required.")
+      .min(5, { password: "пароль должен быть более 5" }),
+  });
+
+  const onSubmit = (data: LoginFormFields) => {
+    try {
+      const user = schema.validateSync(data, { abortEarly: false });
+      console.log(user, "все заябись");
+    } catch (e) {
+      console.log(e.value, "*** ошибка  валидации", e.errors);
+    }
+  };
+
+  const handlerSubmit: React.FormEventHandler<HTMLFormElement & FormFields> = (
+    event
+  ) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const { email, password, remember } = form;
+    onSubmit({
+      email: email.value,
+      password: password.value,
+      remember: remember.checked,
+    });
+    form.reset();
+  };
+
   return (
     <div>
-        <h1>FORM - 2</h1>
-    <form onSubmit={handleSubmit(onSubmit)}>
-    <label>
-      First Name
-      <input {...register("firstName")} />
-    </label>
-    <p>{errors.firstName?.message}</p>
-    <label>
-      Age
-      <input {...register("age")} />
-    </label>
-    <p>{errors.age?.message}</p>
-    <label>
-      Email
-      <input {...register("email")} />
-    </label>
-    <p>{errors.email?.message}</p>
-    <input type="submit" disabled={!isValid}/>
-  </form>
-  </div>
-  )
+      <h1>FORM - 2</h1>
+      <form onSubmit={handlerSubmit}>
+        <label>
+          email
+          <input name="email" type="text" required />
+        </label>
+        <label>
+          password
+          <input name="password" type="password" required />
+        </label>
+
+        <label>
+          remember me
+          <input name="remember" type="checkbox" />
+        </label>
+
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  );
 }
