@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from 'yup';
+import "./style.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const schema = yup.object({
+    firstName: yup
+    .string().required('Введите имя')
+    .matches(/[A-Z]{1}[a-z]{1,23}/, 'Invalid format, example: John'),
+    age: yup
+    .string().required('Введите возраст')
+    .matches(/[^-?][0-1]{1}[0-9]{0,2}/, 'Invalid format, example: 10'),
+    email: yup
+    .string().required('Введите почту')
+    .email('Invalid email'),
+  });
+
+  const {
+    register,
+    formState: { errors, isValid },
+    reset,
+    handleSubmit,
+  } = useForm({mode: 'onBlur', resolver: yupResolver(schema)});
+
+  const onSubmit = (data) => {
+    console.log(JSON.stringify(data));
+    reset();
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <h1>React Hook Form</h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <label>
+          First Name
+          <input {...register("firstName")} />
+        </label>
+        <p>{errors.firstName?.message}</p>
+        <label>
+          Age
+          <input {...register("age")} />
+        </label>
+        <p>{errors.age?.message}</p>
+        <label>
+          Email
+          <input {...register("email")} />
+        </label>
+        <p>{errors.email?.message}</p>
+        <input type="submit" disabled={!isValid}/>
+      </form>
+    </div>
+  );
 }
 
-export default App
+export default App;
