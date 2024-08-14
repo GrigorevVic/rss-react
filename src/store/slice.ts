@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const slise = createSlice({
   name: "form",
-  initialState: {form: ''},
+  initialState: {form: {}},
   reducers: {
     addDataForm(state, action) {
       state.form = action.payload;

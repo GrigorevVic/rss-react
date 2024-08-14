@@ -3,12 +3,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
 import { addDataForm } from "../store/slice";
 import { useNavigate } from "react-router-dom";
-import { schema } from '../util/const';
+import { schema, DataFormFields } from "../util/const";
 
 export function Form1() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const addData = (data) => {
+  const addData = (data: DataFormFields) => {
     dispatch(addDataForm(data));
   };
 
@@ -19,16 +19,16 @@ export function Form1() {
     handleSubmit,
   } = useForm({ mode: "onBlur", resolver: yupResolver(schema) });
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: DataFormFields) => {
     addData(data);
     reset();
-    navigate('/', {replace: true});
+    navigate("/", { replace: true });
   };
 
   return (
     <div>
       <h1>FORM - 1</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form className="form" onSubmit={handleSubmit(onSubmit)}>
         <label>
           First Name
           <input {...register("firstName")} />
@@ -43,10 +43,18 @@ export function Form1() {
           Email
           <input {...register("email")} />
         </label>
-        <p>{errors.email?.message}</p>
-        <input type="submit" disabled={!isValid} />
+        <div className="gender">
+          <label>
+            <input {...register("gender")} type="radio" value="male" />
+            Male
+          </label>
+          <label>
+            <input {...register("gender")} type="radio" value="female" />
+            Female
+          </label>
+        </div>
+        <button type="submit" disabled={!isValid}>SUBMIT</button>
       </form>
     </div>
   );
 }
-
