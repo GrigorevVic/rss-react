@@ -1,51 +1,50 @@
+import { schema } from '../util/const';
+import { useDispatch } from "react-redux";
+import { addDataForm } from "../store/slice";
+import { useNavigate } from "react-router-dom";
 
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 
 type FormFields = {
+  firstName: HTMLInputElement;
+  age: HTMLInputElement;
   email: HTMLInputElement;
-  password: HTMLInputElement;
-  remember: HTMLInputElement;
 };
 
 type LoginFormFields = {
+  firstName: string;
+  age: string;
   email: string;
-  password: string;
-  remember: boolean;
 };
 
 export function Form2() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const addData = (data) => {
+    dispatch(addDataForm(data));
+  };
 
-  const schema = yup.object().shape({
-    email: yup
-      .string()
-      .email({ email: "некорректный емайл" })
-      .required("This is required."),
-    password: yup
-      .string()
-      .required("This is required.")
-      .min(5, { password: "пароль должен быть более 5" }),
-  });
 
   const onSubmit = (data: LoginFormFields) => {
     try {
-      const user = schema.validateSync(data, { abortEarly: false });
-      console.log(user, "все заябись");
+      const formData = schema.validateSync(data, { abortEarly: false });
+      addData(formData);
+      navigate('/', {replace: true});
     } catch (e) {
       console.log(e.value, "*** ошибка  валидации", e.errors);
     }
   };
+    
 
   const handlerSubmit: React.FormEventHandler<HTMLFormElement & FormFields> = (
     event
   ) => {
     event.preventDefault();
     const form = event.currentTarget;
-    const { email, password, remember } = form;
+    const { firstName, age, email } = form;
     onSubmit({
+      firstName: firstName.value,
+      age: age.value,
       email: email.value,
-      password: password.value,
-      remember: remember.checked,
     });
     form.reset();
   };
@@ -55,20 +54,20 @@ export function Form2() {
       <h1>FORM - 2</h1>
       <form onSubmit={handlerSubmit}>
         <label>
-          email
-          <input name="email" type="text" required />
+        First Name
+          <input name="firstName" type="text" required />
         </label>
         <label>
-          password
-          <input name="password" type="password" required />
+          Age
+          <input name="age" type="test" required />
         </label>
 
         <label>
-          remember me
-          <input name="remember" type="checkbox" />
+          Email
+          <input name="email" type="email" required/>
         </label>
 
-        <button type="submit">Login</button>
+        <input type="submit" />
       </form>
     </div>
   );

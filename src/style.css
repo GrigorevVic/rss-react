@@ -131,4 +131,20 @@ body {
     display: flex;
     justify-content: space-between;
   }
+
+  .form-show {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .field {
+    border: 1px solid white;
+    width: 200px;
+    margin: 5px;
+    padding: 2px;
+  }
+  
   
