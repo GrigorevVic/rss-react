@@ -16,7 +16,7 @@ export function Form2() {
       addData(formData);
       navigate("/", { replace: true });
     } catch (e: unknown) {
-      console.log("*** ошибка  валидации", e.errors);
+      console.log("*** ошибка  валидации", e);
     }
   };
 
